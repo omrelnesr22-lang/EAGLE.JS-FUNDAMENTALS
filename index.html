@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🦅 EAGLE — JS Fundamentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3ead9;
+  --bg2:#ece0c7;
+  --panel:#fffbf2;
+  --panel2:#f7eed9;
+  --ink:#3a2e1f;
+  --muted:#8a7a5c;
+  --line:rgba(58,46,31,.14);
+  --line-strong:rgba(58,46,31,.26);
+  --gold:#b8860b;
+  --gold2:#d9a441;
+  --brown:#6b4226;
+  --ok:#3f8c5a;
+  --bad:#c2452e;
+  --sans:'Tajawal',sans-serif;
+  --head:'Poppins',sans-serif;
+  --mono:'Fira Code',monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;font-family:var(--sans);color:var(--ink);
+  background:
+    radial-gradient(900px 480px at 92% -8%, rgba(184,134,11,.10), transparent 60%),
+    radial-gradient(700px 420px at -6% 105%, rgba(107,66,38,.08), transparent 55%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+  min-height:100vh;line-height:1.85;
+}
+h1,h2,h3,b{font-family:var(--head);}
+.app{display:flex;min-height:100vh;}
+
+/* ---------- sidebar ---------- */
+.sidebar{
+  width:272px;flex:0 0 272px;
+  background:rgba(255,251,242,.8);backdrop-filter:blur(8px);
+  border-left:1px solid var(--line);
+  padding:22px 16px 34px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px;}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 6px 16px;border-bottom:2px dashed var(--line-strong);margin-bottom:14px;}
+.brand .emoji{font-size:32px;}
+.brand b{display:block;font-size:17px;color:var(--brown);letter-spacing:.02em;}
+.brand span{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px;}
+.group{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:16px 8px 6px;font-family:var(--mono);}
+.stick{
+  display:flex;align-items:center;gap:10px;padding:8px 11px;margin-bottom:4px;border-radius:10px;
+  text-decoration:none;color:var(--ink);font-size:13.3px;border-inline-start:3px solid transparent;
+  transition:background .15s,border-color .15s;
+}
+.stick .num{font-family:var(--mono);font-size:11px;color:var(--muted);width:18px;}
+.stick:hover{background:var(--panel2);}
+.stick.active{background:var(--panel2);border-inline-start-color:var(--gold);}
+
+.main{flex:1;min-width:0;}
+.topbar{display:none;position:sticky;top:0;z-index:20;background:rgba(243,234,217,.92);backdrop-filter:blur(6px);padding:12px 16px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
+.topbar .b{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:700;color:var(--brown);}
+.menu-btn{background:var(--gold);border:none;color:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-family:var(--sans);font-weight:700;font-size:13px;}
+
+.hero{padding:clamp(40px,6vw,66px) clamp(20px,5vw,48px) 30px;max-width:980px;}
+.hero .eyebrow{font-family:var(--mono);color:var(--gold);font-size:13px;margin-bottom:10px;font-weight:600;}
+.hero h1{font-size:clamp(26px,4vw,40px);margin:0 0 14px;color:var(--brown);line-height:1.35;}
+.hero h1 span{color:var(--gold);}
+.hero p{color:var(--muted);font-size:16px;max-width:640px;margin:0;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
+.tag{font-family:var(--mono);font-size:12.5px;color:var(--brown);border:1.5px dashed var(--line-strong);border-radius:20px;padding:7px 14px;background:rgba(255,255,255,.5);}
+
+section.card{
+  margin:0 clamp(16px,5vw,48px) 28px;max-width:980px;
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 10px 26px rgba(107,66,38,.07);overflow:hidden;scroll-margin-top:20px;
+}
+.card-head{padding:17px clamp(16px,3vw,24px);border-bottom:1px solid var(--line);background:var(--panel2);display:flex;align-items:center;gap:12px;}
+.card-head .num{font-family:var(--head);font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--gold2),var(--gold));width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.card-head h2{margin:0;font-size:clamp(17px,2vw,20px);color:var(--brown);}
+.card-body{padding:clamp(16px,3vw,24px);}
+.card-body p, .card-body li{color:#4a3d2b;font-size:15px;}
+.card-body ul{padding-inline-start:22px;margin:10px 0;}
+.card-body li{margin-bottom:6px;}
+
+.two-col{display:flex;gap:14px;flex-wrap:wrap;}
+.chip{flex:1 1 230px;border:1.5px solid var(--line-strong);border-radius:14px;padding:15px 17px;background:var(--panel2);}
+.chip h3{margin:0 0 7px;font-size:15px;color:var(--gold);}
+.chip p{margin:0;font-size:13.5px;color:var(--muted)!important;}
+
+pre{background:#2a2016;border:1px solid var(--line-strong);border-radius:10px;padding:13px 16px;overflow-x:auto;direction:ltr;text-align:left;font-family:var(--mono);font-size:12.8px;color:#f3e9d2;margin:10px 0;white-space:pre-wrap;}
+pre .k{color:#e8b964;}
+pre .s{color:#9fd98a;}
+pre .c{color:#a89a82;}
+code.inline{background:#2a2016;color:#f3e9d2;border:1px solid var(--line-strong);padding:1px 7px;border-radius:6px;font-family:var(--mono);font-size:13px;direction:ltr;display:inline-block;unicode-bidi:embed;}
+
+table.attrs{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+table.attrs th,table.attrs td{border:1px solid var(--line);padding:9px 11px;text-align:center;vertical-align:middle;}
+table.attrs th{background:var(--panel2);color:var(--gold);font-family:var(--mono);font-size:12px;}
+table.attrs td:first-child, table.attrs th:first-child{text-align:right;}
+table.attrs code{direction:ltr;display:inline-block;}
+
+/* interactive */
+.demo{border:1.5px dashed var(--line-strong);border-radius:14px;padding:16px;background:rgba(255,255,255,.5);margin-top:14px;}
+.demo-label{font-family:var(--mono);font-size:11.5px;color:var(--gold);margin-bottom:10px;font-weight:700;}
+
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.tab-btn{font-family:var(--mono);font-size:12.5px;border:1.5px solid var(--line-strong);background:var(--panel);border-radius:20px;padding:6px 16px;cursor:pointer;color:var(--ink);}
+.tab-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+
+.flip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.flipcard{perspective:900px;height:104px;cursor:pointer;}
+.flipcard-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;}
+.flipcard.flipped .flipcard-inner{transform:rotateY(180deg);}
+.flipface{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:13px;}
+.flipfront{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#fff;font-family:var(--mono);font-weight:600;}
+.flipback{background:#2a2016;border:1.5px solid var(--gold);transform:rotateY(180deg);color:#f3e9d2;font-size:12px;}
+
+.btn{font-family:var(--sans);font-weight:700;font-size:13.5px;border:none;border-radius:10px;padding:9px 16px;cursor:pointer;}
+.btn.primary{background:var(--gold);color:#fff;}
+.btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line-strong);}
+.row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+
+.code-editor{width:100%;min-height:110px;background:#2a2016;color:#f3e9d2;border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12.8px;direction:ltr;text-align:left;resize:vertical;margin-bottom:8px;}
+.code-output{background:#20170f;border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;min-height:40px;font-family:var(--mono);font-size:12.8px;color:#9fd98a;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word;}
+.code-output.has-error{color:#f29a85;}
+
+.sample-box{background:#fff;border:1.5px solid var(--line-strong);border-radius:10px;padding:14px;margin-bottom:10px;font-size:14px;transition:background .2s,border-color .2s;}
+.sample-box.active{background:#fff6e0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.12);}
+.sample-list{list-style:none;padding:0;margin:0 0 10px;display:flex;flex-direction:column;gap:6px;}
+.sample-list li{background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:8px 12px;font-size:13.5px;}
+.sample-list li.highlight{border-color:var(--gold);background:#fff6e0;}
+
+footer{text-align:center;color:var(--muted);font-size:12.5px;font-family:var(--mono);padding:40px 20px 60px;}
+
+@media (max-width:900px){
+  .sidebar{position:fixed;inset-inline-end:0;top:0;height:100vh;transform:translateX(105%);transition:transform .22s ease;z-index:30;box-shadow:-14px 0 40px rgba(0,0,0,.18);width:82%;max-width:300px;flex-basis:auto;}
+  .sidebar.open{transform:translateX(0);}
+  .topbar{display:flex;}
+}
+@media (max-width:560px){
+  table.attrs, table.attrs tbody, table.attrs tr, table.attrs td, table.attrs th{display:block;width:100%;}
+  table.attrs tr{margin-bottom:8px;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;}
+  table.attrs th{border:none;}
+  table.attrs td{border:none;border-top:1px solid var(--line);text-align:center!important;}
+  .flip-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="b">🦅 EAGLE</div>
+    <button class="menu-btn" id="menuBtn">☰ الفهرس</button>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="emoji">🦅</span>
+      <div><b>EAGLE</b><span>JS FUNDAMENTALS</span></div>
+    </div>
+
+    <div class="group">📁 البداية</div>
+    <a class="stick" href="#s1"><span class="num">1</span>طرق كتابة كود JS</a>
+    <a class="stick" href="#s2"><span class="num">2</span>المتغيرات var/let/const</a>
+
+    <div class="group">📁 أنواع البيانات</div>
+    <a class="stick" href="#s3"><span class="num">3</span>Strings</a>
+    <a class="stick" href="#s4"><span class="num">4</span>Numbers</a>
+    <a class="stick" href="#s5"><span class="num">5</span>Boolean · null · undefined</a>
+    <a class="stick" href="#s6"><span class="num">6</span>Object · Array</a>
+
+    <div class="group">📁 الدوال</div>
+    <a class="stick" href="#s7"><span class="num">7</span>أساسيات الدوال</a>
+    <a class="stick" href="#s8"><span class="num">8</span>طرق تعريف الدوال</a>
+
+    <div class="group">📁 أدوات التطوير</div>
+    <a class="stick" href="#s9"><span class="num">9</span>Console Methods</a>
+    <a class="stick" href="#s10"><span class="num">10</span>Debugging</a>
+
+    <div class="group">📁 الفهم العميق</div>
+    <a class="stick" href="#s11"><span class="num">11</span>Scope</a>
+    <a class="stick" href="#s12"><span class="num">12</span>Hoisting</a>
+    <a class="stick" href="#s13"><span class="num">13</span>Closure</a>
+
+    <div class="group">📁 التعامل مع DOM</div>
+    <a class="stick" href="#s14"><span class="num">14</span>مقدمة DOM · Selectors</a>
+    <a class="stick" href="#s15"><span class="num">15</span>تعديل المحتوى · classList</a>
+    <a class="stick" href="#s16"><span class="num">16</span>Attributes</a>
+    <a class="stick" href="#s17"><span class="num">17</span>إنشاء العناصر · التنقل</a>
+  </aside>
+
+  <main class="main">
+    <div class="hero">
+      <div class="eyebrow">🦅 EAGLE</div>
+      <h1>أساسيات JavaScript،<br>من المتغيرات إلى <span>DOM</span></h1>
+      <p>مرجع تفاعلي شامل — كل جزء نظري موضّح بمثال، وكل جزء عملي تقدر تجربه بنفسك مباشرة.</p>
+      <div class="hero-tags">
+        <span class="tag">Responsive ✅</span>
+        <span class="tag">17 Topic</span>
+        <span class="tag">Live JS Demos</span>
+      </div>
+    </div>
+
+    <!-- 1 -->
+    <section class="card" id="s1">
+      <div class="card-head"><span class="num">1</span><h2>طرق كتابة كود JavaScript</h2></div>
+      <div class="card-body">
+        <div class="two-col">
+          <div class="chip"><h3>1. وحدة التحكم (Console)</h3><p>كتابة وتنفيذ أوامر مباشرة في Console المتصفح — مناسبة للاختبارات السريعة.</p></div>
+          <div class="chip"><h3>2. Node.js</h3><p>بيئة تشغيل JavaScript على Server-side، تكتب الكود في ملف .js وتشغّله بـ Node.js.</p></div>
+          <div class="chip"><h3>3. وسم Script</h3><p>كتابة الكود داخل <code class="inline">&lt;script&gt;</code> في صفحة HTML (داخل head أو body).</p></div>
+          <div class="chip"><h3>4. ملف خارجي (External)</h3><p>كتابة الكود في ملف منفصل وربطه بـ <code class="inline">src</code> — الأفضل للمشاريع الكبيرة.</p></div>
+        </div>
+        <pre><span class="k">&lt;script</span> <span class="k">src</span>=<span class="s">"./script.js"</span><span class="k">&gt;&lt;/script&gt;</span>
+<span class="c">// الكود الموجود داخل script.js هو من سيتم تنفيذه</span></pre>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="card" id="s2">
+      <div class="card-head"><span class="num">2</span><h2>المتغيرات: var · let · const</h2></div>
+      <div class="card-body">
+        <p>المتغيّر (Variable) يُستخدم لتخزين قيمة معينة، ويمكن تعريفه في JavaScript باستخدام إحدى ثلاث كلمات رئيسية، ولكل منها قواعد مختلفة:</p>
+        <table class="attrs">
+          <tr><th></th><th>Block Scope</th><th>Reassignment</th><th>Redeclaration</th></tr>
+          <tr><td><code>var</code></td><td>❌ لا</td><td>✅ نعم</td><td>✅ نعم</td></tr>
+          <tr><td><code>let</code></td><td>✅ نعم</td><td>✅ نعم</td><td>❌ لا</td></tr>
+          <tr><td><code>const</code></td><td>✅ نعم</td><td>❌ لا</td><td>❌ لا</td></tr>
+        </table>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب الفرق بنفسك</div>
+          <div class="code-output" id="varDemoOut">اضغط على زر لتشغيل المثال</div>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn primary" id="varBtn1">جرّب var (نطاق الدالة)</button>
+            <button class="btn primary" id="varBtn2">جرّب let (نطاق الكتلة)</button>
+          </div>
+        </div>
+        <div class="demo-label" style="margin-top:16px;">🔑 تسمية المتغيرات (Naming Convention)</div>
+        <ul>
+          <li>كلمة واحدة: حروف صغيرة — مثل <code class="inline">age</code>.</li>
+          <li>أكثر من كلمة: <code class="inline">camelCase</code> مثل <code class="inline">firstName</code>، أو <code class="inline">snake_case</code> مثل <code class="inline">first_name</code>.</li>
+          <li>تجنّب الاختصارات المبهمة والكلمات المحجوزة مثل <code class="inline">if</code> أو <code class="inline">function</code>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="card" id="s3">
+      <div class="card-head"><span class="num">3</span><h2>Strings</h2></div>
+      <div class="card-body">
+        <p>السلسلة النصية (String) هي أحرف أو أرقام أو رموز بين علامتي تنصيص: <code class="inline">' '</code> أو <code class="inline">" "</code> أو <code class="inline">` `</code> (backticks).</p>
+        <table class="attrs">
+          <tr><th>Concatenation</th><th>Interpolation</th></tr>
+          <tr><td>دمج نصوص باستخدام <code>+</code></td><td>تضمين قيم داخل backticks بصيغة <code>${...}</code></td></tr>
+        </table>
+        <pre><span class="c">// Concatenation</span>
+<span class="k">const</span> fullName = firstName + <span class="s">' '</span> + lastName;
+
+<span class="c">// Interpolation</span>
+<span class="k">const</span> fullName = <span class="s">`${firstName} ${lastName}`</span>;
+
+<span class="c">// سلسلة متعددة الأسطر</span>
+<span class="k">const</span> message = <span class="s">`line one
+line two`</span>;</pre>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="card" id="s4">
+      <div class="card-head"><span class="num">4</span><h2>Numbers</h2></div>
+      <div class="card-body">
+        <p>نوع البيانات number يمثّل الأعداد الصحيحة والعشرية والسالبة، ويُستخدم للعمليات الحسابية.</p>
+        <table class="attrs">
+          <tr><th>الدالة</th><th>الوظيفة</th><th>مثال</th></tr>
+          <tr><td><code>Math.floor()</code></td><td>تقريب لأصغر عدد صحيح</td><td>Math.floor(3.7) → 3</td></tr>
+          <tr><td><code>Math.ceil()</code></td><td>تقريب لأكبر عدد صحيح</td><td>Math.ceil(3.2) → 4</td></tr>
+          <tr><td><code>Math.round()</code></td><td>تقريب لأقرب عدد صحيح</td><td>Math.round(3.5) → 4</td></tr>
+          <tr><td><code>Math.random()</code></td><td>عدد عشوائي بين 0 و 1</td><td>—</td></tr>
+          <tr><td><code>parseInt()</code></td><td>تحويل نص إلى عدد صحيح</td><td>parseInt("10") → 10</td></tr>
+          <tr><td><code>typeof</code></td><td>معرفة نوع البيانات</td><td>typeof 5 → "number"</td></tr>
+        </table>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك</div>
+          <textarea class="code-editor" id="numCode">console.log(5 + 1);
+console.log(5 + "1");
+console.log(10 % 3);
+console.log(Math.ceil(3.2));</textarea>
+          <div class="row"><button class="btn primary" id="numRun">▶ شغّل الكود</button><button class="btn ghost" id="numReset">↺ Reset</button></div>
+          <div class="code-output" id="numOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="card" id="s5">
+      <div class="card-head"><span class="num">5</span><h2>Boolean · null · undefined</h2></div>
+      <div class="card-body">
+        <p><b>Boolean</b> يمثّل قيمتين فقط: <code class="inline">true</code> أو <code class="inline">false</code>، ويُستخدم لاتخاذ القرارات.</p>
+        <div class="two-col">
+          <div class="chip"><h3>null</h3><p>تعني عدم وجود قيمة — تم تعيينها عمدًا كـ "فارغة".</p></div>
+          <div class="chip"><h3>undefined</h3><p>تعني أن المتغيّر لم تُعيَّن له قيمة بعد، أو غير معرّف أصلًا.</p></div>
+        </div>
+        <pre><span class="k">const</span> name = <span class="k">null</span>;      <span class="c">// متغيّر ليس له قيمة عمدًا</span>
+<span class="k">let</span> age;               <span class="c">// متغيّر لم يُعيَّن له قيمة بعد</span>
+console.log(age);     <span class="c">// undefined</span></pre>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="card" id="s6">
+      <div class="card-head"><span class="num">6</span><h2>Object · Array</h2></div>
+      <div class="card-body">
+        <div class="two-col">
+          <div class="chip"><h3>Object</h3><p>مجموعة من الخصائص (Properties)، كل خاصية هي زوج Key:Value — يشبه Dictionary في بايثون.</p></div>
+          <div class="chip"><h3>Array</h3><p>شكل من أشكال الـ Object، لتخزين مجموعة قيم مرتبة بترقيم (Index) يبدأ من صفر.</p></div>
+        </div>
+        <pre><span class="k">const</span> userData = {
+  name: <span class="s">"Ali"</span>,
+  gender: <span class="s">"Male"</span>,
+  age: <span class="s">23</span>
+};
+
+<span class="k">const</span> numbers = [<span class="s">1</span>, <span class="s">2</span>, <span class="s">3</span>, <span class="s">4</span>, <span class="s">5</span>];</pre>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="card" id="s7">
+      <div class="card-head"><span class="num">7</span><h2>أساسيات الدوال (Functions)</h2></div>
+      <div class="card-body">
+        <p>الدالة (Function) هي مجموعة أوامر تنفّذ وظيفة محددة عند استدعائها، تساعد على تنظيم الكود وإعادة استخدامه.</p>
+        <div class="two-col">
+          <div class="chip"><h3>Custom Functions</h3><p>دوال ينشئها المبرمج بنفسه لتنفيذ وظيفة معينة.</p></div>
+          <div class="chip"><h3>Built-in Functions</h3><p>دوال جاهزة في اللغة مثل <code class="inline">parseInt()</code> و <code class="inline">Math.max()</code>.</p></div>
+        </div>
+        <p>تتكوّن الدالة من: اسم، معاملات (Parameters)، جسم الدالة (Function body)، وجملة الإرجاع (return).</p>
+        <pre><span class="k">function</span> calculateArea(length, width) {
+  <span class="k">let</span> area = length * width;
+  <span class="k">return</span> area;
+}
+console.log(calculateArea(5, 10)); <span class="c">// 50</span>
+
+<span class="c">// معامل بقيمة افتراضية (Default Parameter)</span>
+<span class="k">function</span> getUserName(name = <span class="s">"Ali"</span>) {
+  console.log(<span class="s">"Hello, "</span> + name);
+}
+getUserName();           <span class="c">// Hello, Ali</span>
+getUserName(<span class="s">"Mohamed"</span>);  <span class="c">// Hello, Mohamed</span></pre>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="card" id="s8">
+      <div class="card-head"><span class="num">8</span><h2>طرق تعريف الدوال</h2></div>
+      <div class="card-body">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="t1">Regular Function</button>
+          <button class="tab-btn" data-tab="t2">Function Expression</button>
+          <button class="tab-btn" data-tab="t3">Arrow Function</button>
+        </div>
+        <pre id="t1" class="tab-pane"><span class="k">function</span> multiply(a, b) {
+  <span class="k">return</span> a * b;
+}</pre>
+        <pre id="t2" class="tab-pane" style="display:none;"><span class="k">const</span> multiply = <span class="k">function</span>(a, b) {
+  <span class="k">return</span> a * b;
+};</pre>
+        <pre id="t3" class="tab-pane" style="display:none;"><span class="k">const</span> multiply = (a, b) =&gt; a * b;</pre>
+        <p>بالإضافة إلى ذلك:</p>
+        <ul>
+          <li><b>IIFE</b> (Immediately Invoked Function Expression): دالة تُعرَّف وتُستدعى فورًا دون تخزينها في متغيّر: <code class="inline">(function(a,b){ console.log(a*b); })(5,6);</code></li>
+          <li><b>Methods</b>: دوال معرّفة داخل كائن (Object) — مثل <code class="inline">person.sayHello()</code>.</li>
+          <li><b>Callback function</b>: دالة تُمرَّر كـ Argument إلى دالة أخرى لتُستدعى عند حدوث حدث معيّن، مثل <code class="inline">setTimeout(add, 2000)</code>.</li>
+        </ul>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك</div>
+          <textarea class="code-editor" id="funcCode">const multiply = (a, b) => a * b;
+console.log(multiply(5, 6));</textarea>
+          <div class="row"><button class="btn primary" id="funcRun">▶ شغّل الكود</button><button class="btn ghost" id="funcReset">↺ Reset</button></div>
+          <div class="code-output" id="funcOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="card" id="s9">
+      <div class="card-head"><span class="num">9</span><h2>Console Methods</h2></div>
+      <div class="card-body">
+        <p>أدوات تساعد في عرض المعلومات وتتبّع تنفيذ البرنامج:</p>
+        <div class="flip-grid" id="consoleFlips"></div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="card" id="s10">
+      <div class="card-head"><span class="num">10</span><h2>Debugging — Breakpoint</h2></div>
+      <div class="card-body">
+        <p><b>Breakpoint</b> هي نقطة توقف معينة في الكود، عند الوصول إليها يتوقف تنفيذ البرنامج مؤقتًا، فتستطيع فحص قيم المتغيّرات وفهم سير التنفيذ خطوة بخطوة — باستخدام أدوات المطوّر (DevTools) في المتصفح.</p>
+        <pre><span class="k">if</span> (condition) {
+  <span class="k">debugger</span>;  <span class="c">// سيتوقف التنفيذ هنا في وضع التصحيح</span>
+}</pre>
+        <table class="attrs">
+          <tr><th>نوع Break on</th><th>يتوقف عند</th></tr>
+          <tr><td>DOM changes</td><td>تغيّر عناصر في شجرة DOM</td></tr>
+          <tr><td>XHR/fetch requests</td><td>إرسال طلب بيانات</td></tr>
+          <tr><td>Exceptions</td><td>حدوث خطأ (Exception) في الكود</td></tr>
+          <tr><td>Specific function</td><td>الدخول أو الخروج من دالة محددة</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="card" id="s11">
+      <div class="card-head"><span class="num">11</span><h2>Scope</h2></div>
+      <div class="card-body">
+        <p>الـ Scope يحدّد من أين يمكن الوصول إلى متغيّر أو دالة في الكود:</p>
+        <div class="two-col">
+          <div class="chip"><h3>Global Scope</h3><p>متغيّر مُعرَّف خارج أي دالة — يمكن الوصول إليه من أي مكان في الكود.</p></div>
+          <div class="chip"><h3>Function Scope</h3><p>متغيّر مُعرَّف داخل دالة — لا يُرى إلا داخلها فقط.</p></div>
+          <div class="chip"><h3>Block Scope</h3><p>متغيّر let/const داخل كتلة (مثل if أو for) — مرئي فقط داخل تلك الكتلة.</p></div>
+          <div class="chip"><h3>Scope Lookup</h3><p>عند البحث عن متغيّر، يبحث الكود في النطاق الحالي أولًا، ثم ينتقل للأعلى تدريجيًا حتى يجده.</p></div>
+        </div>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك — Scope Lookup</div>
+          <textarea class="code-editor" id="scopeCode">var name = 'Ali';
+function sayHi() {
+  var name = 'Mohamed';
+  function sayHello() {
+    var name = 'Ahmed';
+    console.log('Hello, ' + name);
+  }
+  sayHello();
+}
+sayHi();</textarea>
+          <div class="row"><button class="btn primary" id="scopeRun">▶ شغّل الكود</button><button class="btn ghost" id="scopeReset">↺ Reset</button></div>
+          <div class="code-output" id="scopeOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="card" id="s12">
+      <div class="card-head"><span class="num">12</span><h2>Hoisting</h2></div>
+      <div class="card-body">
+        <p>الـ Hoisting هو رفع تعريفات المتغيّرات والدوال إلى أعلى نطاقها قبل تنفيذ الكود — لكن التفاصيل تختلف حسب الكلمة المستخدمة:</p>
+        <ul>
+          <li><code class="inline">var</code>: تُرفع، وقيمتها <code class="inline">undefined</code> حتى تصل للسطر الذي يعرّفها.</li>
+          <li><code class="inline">let</code> / <code class="inline">const</code>: لا يعمل معها Hoisting — استخدامها قبل تعريفها يسبب <code class="inline">ReferenceError</code>.</li>
+          <li>الدوال العادية (function): تُرفع بالكامل، فيمكن استدعاؤها قبل تعريفها في الكود. (لا يعمل هذا مع Arrow Functions.)</li>
+        </ul>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك — غيّر بين var و let وشاهد الفرق</div>
+          <div class="tabs">
+            <button class="tab-btn active" data-hoist="var">var</button>
+            <button class="tab-btn" data-hoist="let">let</button>
+          </div>
+          <div class="code-output" id="hoistOut">اضغط على زر لتشغيل المثال</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="card" id="s13">
+      <div class="card-head"><span class="num">13</span><h2>Closure</h2></div>
+      <div class="card-body">
+        <p>الإغلاق (Closure) يعني أن دالة داخلية تحتفظ بإمكانية الوصول لمتغيّرات الدالة الخارجية حتى بعد انتهاء تنفيذ تلك الدالة الخارجية.</p>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك — عدّاد باستخدام Closure</div>
+          <textarea class="code-editor" id="closureCode">function counter() {
+  var count = 0;
+  function increment() {
+    count++;
+    console.log(count);
+  }
+  return increment;
+}
+var myCounter = counter();
+myCounter();
+myCounter();
+myCounter();</textarea>
+          <div class="row"><button class="btn primary" id="closureRun">▶ شغّل الكود</button><button class="btn ghost" id="closureReset">↺ Reset</button></div>
+          <div class="code-output" id="closureOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section class="card" id="s14">
+      <div class="card-head"><span class="num">14</span><h2>مقدمة DOM · Selectors</h2></div>
+      <div class="card-body">
+        <p><b>DOM</b> (Document Object Model) هو تمثيل بنية صفحة HTML كعناصر يمكن الوصول إليها وتعديلها بـ JavaScript.</p>
+        <table class="attrs">
+          <tr><th>المحدد (Selector)</th><th>يُعيد</th></tr>
+          <tr><td><code>querySelector()</code></td><td>أول عنصر مطابق</td></tr>
+          <tr><td><code>querySelectorAll()</code></td><td>كل العناصر المطابقة (NodeList)</td></tr>
+          <tr><td><code>getElementById()</code></td><td>العنصر صاحب الـ id المحدد</td></tr>
+          <tr><td><code>getElementsByClassName()</code></td><td>كل العناصر بالـ class المحدد</td></tr>
+        </table>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك — اضغط لتحديد عنصر من القائمة</div>
+          <ul class="sample-list" id="selList">
+            <li data-id="item1">عنصر 1 — id="item1"</li>
+            <li class="pick" data-id="item2">عنصر 2 — class="pick"</li>
+            <li class="pick" data-id="item3">عنصر 3 — class="pick"</li>
+          </ul>
+          <div class="row">
+            <button class="btn primary" data-sel="id">getElementById("item1")</button>
+            <button class="btn primary" data-sel="class">querySelectorAll(".pick")</button>
+            <button class="btn ghost" data-sel="clear">مسح التحديد</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 -->
+    <section class="card" id="s15">
+      <div class="card-head"><span class="num">15</span><h2>تعديل المحتوى · classList</h2></div>
+      <div class="card-body">
+        <table class="attrs">
+          <tr><th>الخاصية</th><th>الوظيفة</th></tr>
+          <tr><td><code>innerText</code></td><td>يتعامل مع المحتوى كنص فقط</td></tr>
+          <tr><td><code>innerHTML</code></td><td>يتعامل مع النص وأي وسوم HTML بداخله</td></tr>
+          <tr><td><code>insertAdjacentText</code></td><td>إدراج نص في موضع محدد (قبل/بعد/داخل العنصر)</td></tr>
+        </table>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب الفرق بنفسك</div>
+          <div class="sample-box" id="textSample">النص الأصلي هنا</div>
+          <div class="row">
+            <button class="btn primary" id="setInnerText">element.innerText = "&lt;b&gt;Bold&lt;/b&gt;"</button>
+            <button class="btn primary" id="setInnerHTML">element.innerHTML = "&lt;b&gt;Bold&lt;/b&gt;"</button>
+          </div>
+        </div>
+        <div class="demo-label" style="margin-top:16px;">classList</div>
+        <p>يُستخدم classList للتعامل مع فئات (Classes) عنصر HTML: <code class="inline">add()</code> و <code class="inline">remove()</code> و <code class="inline">toggle()</code> و <code class="inline">contains()</code>.</p>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك</div>
+          <div class="sample-box" id="classSample">element.classList.toggle("active")</div>
+          <button class="btn primary" id="toggleClassBtn">toggle("active")</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 -->
+    <section class="card" id="s16">
+      <div class="card-head"><span class="num">16</span><h2>Attributes</h2></div>
+      <div class="card-body">
+        <div class="two-col">
+          <div class="chip"><h3>Built-in Attributes</h3><p>سمات مضمّنة في عناصر HTML، مثل <code class="inline">src</code> في &lt;img&gt;، و <code class="inline">id</code>، و <code class="inline">class</code>.</p></div>
+          <div class="chip"><h3>Custom Data Attributes</h3><p>سمات تُنشئها أنت بنفسك لتخزين بيانات إضافية، بصيغة <code class="inline">data-attributeName</code>.</p></div>
+        </div>
+        <pre><span class="k">&lt;h1</span> id=<span class="s">"myElement"</span> data-name=<span class="s">"HTML"</span><span class="k">&gt;</span>HTML<span class="k">&lt;/h1&gt;</span>
+
+<span class="c">// الوصول إليه عبر الـ Custom Data Attribute:</span>
+<span class="k">const</span> element = document.querySelector(<span class="s">'[data-name="HTML"]'</span>);</pre>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك</div>
+          <div class="sample-box" id="attrSample" data-name="HTML">هذا العنصر له data-name="HTML"</div>
+          <button class="btn primary" id="readAttrBtn">element.dataset.name</button>
+          <div class="code-output" id="attrOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17 -->
+    <section class="card" id="s17">
+      <div class="card-head"><span class="num">17</span><h2>إنشاء العناصر · التنقل بين العناصر</h2></div>
+      <div class="card-body">
+        <p><code class="inline">createElement</code> و <code class="inline">appendChild</code> يُستخدمان لإنشاء عنصر HTML جديد وإضافته داخل عنصر آخر:</p>
+        <pre><span class="k">const</span> divElement = document.createElement(<span class="s">"div"</span>);
+<span class="k">const</span> pElement = document.createElement(<span class="s">"p"</span>);
+divElement.appendChild(pElement);</pre>
+        <div class="demo">
+          <div class="demo-label">🧩 جرّب بنفسك — أضف عنصرًا جديدًا فعليًا</div>
+          <ul class="sample-list" id="appendList">
+            <li>عنصر أصلي 1</li>
+            <li>عنصر أصلي 2</li>
+          </ul>
+          <button class="btn primary" id="appendBtn">createElement + appendChild</button>
+        </div>
+        <div class="demo-label" style="margin-top:16px;">خصائص التنقل بين العناصر المجاورة</div>
+        <table class="attrs">
+          <tr><th>الخاصية</th><th>تصل إلى</th></tr>
+          <tr><td><code>children</code> / <code>firstElementChild</code> / <code>lastElementChild</code></td><td>عناصر الأبناء (بدون نصوص)</td></tr>
+          <tr><td><code>firstChild</code> / <code>lastChild</code></td><td>أول/آخر ابن (حتى لو كان نصًا)</td></tr>
+          <tr><td><code>previousElementSibling</code> / <code>nextElementSibling</code></td><td>العنصر الشقيق السابق/التالي</td></tr>
+          <tr><td><code>parentElement</code></td><td>العنصر الأب</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <footer>🦅 EAGLE — JS Fundamentals · مرجع تفاعلي شامل</footer>
+  </main>
+</div>
+
+<script>
+/* ===== nav ===== */
+const sticks = document.querySelectorAll('.stick');
+const sections = document.querySelectorAll('section.card');
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+menuBtn && menuBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+sticks.forEach(l=>l.addEventListener('click', ()=> sidebar.classList.remove('open')));
+if (window.IntersectionObserver) {
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      const link = document.querySelector(`.stick[href="#${e.target.id}"]`);
+      if(!link) return;
+      if(e.isIntersecting){ sticks.forEach(l=>l.classList.remove('active')); link.classList.add('active'); }
+    });
+  },{rootMargin:'-25% 0px -60% 0px'});
+  sections.forEach(s=>obs.observe(s));
+}
+
+/* ===== real JS runner (captures console output) ===== */
+function runJS(code, outEl){
+  const logs = [];
+  const orig = { log: console.log, error: console.error, warn: console.warn, info: console.info };
+  const push = (prefix) => (...a) => logs.push(prefix + a.map(x => (typeof x === 'object' ? JSON.stringify(x) : String(x))).join(' '));
+  console.log = push('');
+  console.error = push('⛔ ');
+  console.warn = push('⚠️ ');
+  console.info = push('');
+  let hadError = false;
+  try {
+    const fn = new Function(code);
+    fn();
+  } catch (e) {
+    hadError = true;
+    logs.push('⛔ ' + e.name + ': ' + e.message);
+  } finally {
+    Object.assign(console, orig);
+  }
+  outEl.textContent = logs.length ? logs.join('\n') : '(لا يوجد ناتج — جرّب console.log)';
+  outEl.className = 'code-output' + (hadError ? ' has-error' : '');
+}
+function wireRunner(codeId, runId, resetId, outId, defaultCode){
+  const codeEl = document.getElementById(codeId);
+  const outEl = document.getElementById(outId);
+  document.getElementById(runId).addEventListener('click', () => runJS(codeEl.value, outEl));
+  if (resetId) document.getElementById(resetId).addEventListener('click', () => { codeEl.value = defaultCode; outEl.textContent=''; outEl.className='code-output'; });
+}
+wireRunner('numCode','numRun','numReset','numOut', document.getElementById('numCode').value);
+wireRunner('funcCode','funcRun','funcReset','funcOut', document.getElementById('funcCode').value);
+wireRunner('scopeCode','scopeRun','scopeReset','scopeOut', document.getElementById('scopeCode').value);
+wireRunner('closureCode','closureRun','closureReset','closureOut', document.getElementById('closureCode').value);
+
+/* ===== var/let scope demo (section 2) ===== */
+document.getElementById('varBtn1').addEventListener('click', () => {
+  runJS(`
+function demo(){
+  for (var i = 0; i < 3; i++) {}
+  console.log("i بعد الحلقة (var) =", i);
+}
+demo();
+`, document.getElementById('varDemoOut'));
+});
+document.getElementById('varBtn2').addEventListener('click', () => {
+  runJS(`
+function demo(){
+  for (let i = 0; i < 3; i++) {}
+  try { console.log(i); } catch(e){ console.log("⛔ i غير معرّف خارج الحلقة (let) — " + e.message); }
+}
+demo();
+`, document.getElementById('varDemoOut'));
+});
+
+/* ===== function definition tabs (section 8) ===== */
+document.querySelectorAll('[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p=>p.style.display='none');
+    document.getElementById(btn.dataset.tab).style.display='block';
+  });
+});
+
+/* ===== console methods flip cards (section 9) ===== */
+const consoleMethods = [
+  { front: 'console.log()', back: 'عرض رسالة عادية في الـ Console' },
+  { front: 'console.error()', back: 'عرض رسالة خطأ (تظهر بالأحمر عادة)' },
+  { front: 'console.warn()', back: 'عرض رسالة تحذير تحتاج انتباه' },
+  { front: 'console.table()', back: 'عرض البيانات (مثل Object) في شكل جدول' },
+  { front: 'console.group()', back: 'تجميع رسائل مرتبطة تحت عنوان واحد' },
+  { front: 'console.count()', back: 'عدّ مرات استدعاء دالة معيّنة' }
+];
+const flipGrid = document.getElementById('consoleFlips');
+consoleMethods.forEach(m=>{
+  const card = document.createElement('div');
+  card.className = 'flipcard';
+  card.innerHTML = `<div class="flipcard-inner">
+    <div class="flipface flipfront">${m.front}</div>
+    <div class="flipface flipback">${m.back}</div>
+  </div>`;
+  card.addEventListener('click', ()=> card.classList.toggle('flipped'));
+  flipGrid.appendChild(card);
+});
+
+/* ===== hoisting demo (section 12) ===== */
+const hoistOut = document.getElementById('hoistOut');
+document.querySelectorAll('[data-hoist]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-hoist]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if (btn.dataset.hoist === 'var') {
+      runJS(`console.log(x); var x = 5; console.log(x);`, hoistOut);
+    } else {
+      runJS(`try { console.log(y); } catch(e){ console.log("⛔ " + e.name + ": " + e.message); } let y = 10;`, hoistOut);
+    }
+  });
+});
+
+/* ===== DOM selectors demo (section 14) ===== */
+document.querySelectorAll('[data-sel]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#selList li').forEach(li=>li.classList.remove('highlight'));
+    const mode = btn.dataset.sel;
+    if (mode === 'id') document.querySelector('[data-id="item1"]').classList.add('highlight');
+    else if (mode === 'class') document.querySelectorAll('#selList .pick').forEach(li=>li.classList.add('highlight'));
+  });
+});
+
+/* ===== innerText vs innerHTML demo (section 15) ===== */
+document.getElementById('setInnerText').addEventListener('click', ()=>{
+  document.getElementById('textSample').innerText = '<b>Bold</b>';
+});
+document.getElementById('setInnerHTML').addEventListener('click', ()=>{
+  document.getElementById('textSample').innerHTML = '<b>Bold</b>';
+});
+document.getElementById('toggleClassBtn').addEventListener('click', ()=>{
+  document.getElementById('classSample').classList.toggle('active');
+});
+
+/* ===== attribute demo (section 16) ===== */
+document.getElementById('readAttrBtn').addEventListener('click', ()=>{
+  const el = document.getElementById('attrSample');
+  document.getElementById('attrOut').textContent = 'element.dataset.name → "' + el.dataset.name + '"';
+});
+
+/* ===== createElement/appendChild demo (section 17) ===== */
+let appendCount = 0;
+document.getElementById('appendBtn').addEventListener('click', ()=>{
+  appendCount++;
+  const li = document.createElement('li');
+  li.textContent = 'عنصر جديد أُضيف بالكود #' + appendCount;
+  li.classList.add('highlight');
+  document.getElementById('appendList').appendChild(li);
+});
+</script>
+</body>
+</html>
